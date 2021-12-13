@@ -103,6 +103,13 @@ void ChannelEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     
     LeftChain.prepare(Spec);
     RightChain.prepare(Spec);
+    
+    auto chainSettings = GetChainSettings(apvts);
+    
+    auto BellFilterCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, chainSettings.BellFreq, chainSettings.BellQ, juce::Decibels::decibelsToGain(chainSettings.BellGainInDB));
+    
+    *LeftChain.get<ChainPositions::Bell>().coefficients = *BellFilterCoefficients;
+    *RightChain.get<ChainPositions::Bell>().coefficients = *BellFilterCoefficients;
 }
 
 void ChannelEQAudioProcessor::releaseResources()
@@ -151,6 +158,13 @@ void ChannelEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    
+    auto chainSettings = GetChainSettings(apvts);
+    
+    auto BellFilterCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.BellFreq, chainSettings.BellQ, juce::Decibels::decibelsToGain(chainSettings.BellGainInDB));
+    
+    *LeftChain.get<ChainPositions::Bell>().coefficients = *BellFilterCoefficients;
+    *RightChain.get<ChainPositions::Bell>().coefficients = *BellFilterCoefficients;
 
     juce::dsp::AudioBlock<float> Block(buffer);
     auto LeftBlock = Block.getSingleChannelBlock(0);
@@ -189,20 +203,35 @@ void ChannelEQAudioProcessor::setStateInformation (const void* data, int sizeInB
     // whose contents will have been created by the getStateInformation() call.
 }
 
+ChainSettings GetChainSettings(juce::AudioProcessorValueTreeState &apvts)
+{
+    ChainSettings Settings;
+    
+    Settings.LowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    Settings.LowCutSlope = apvts.getRawParameterValue("LowCut Slope")->load();
+    Settings.HighCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+    Settings.HighCutSlope = apvts.getRawParameterValue("HighCut Slope")->load();
+    Settings.BellFreq = apvts.getRawParameterValue("Bell Freq")->load();
+    Settings.BellGainInDB = apvts.getRawParameterValue("Bell Gain")->load();
+    Settings.BellQ = apvts.getRawParameterValue("Bell Width (Q)")->load();
+    
+    return Settings;
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout ChannelEQAudioProcessor::CreateParameterLayout() // for layout of our parameters
 {
     juce::AudioProcessorValueTreeState::ParameterLayout Layout;
     Layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq",
                                                            "LowCut Freq",
-                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.5f),
                                                            20.0f));
     Layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq",
                                                            "HighCut Freq",
-                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.5f),
                                                            20000.0f));
     Layout.add(std::make_unique<juce::AudioParameterFloat>("Bell Freq",
                                                            "Bell Freq",
-                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 1.0f),
+                                                           juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.5f),
                                                            750.0f));
     Layout.add(std::make_unique<juce::AudioParameterFloat>("Bell Gain",
                                                            "Bell Gain",
