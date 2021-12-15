@@ -85,6 +85,54 @@ private:
         LowCut, Bell, HighCut
     };
     
+    void UpdateBellFilter(const ChainSettings &chainSettings);
+    
+    using Coefficients = Filter::CoefficientsPtr;
+    
+    static void UpdateCoefficients(Coefficients &old, const Coefficients &replacements);
+    
+    template <int Index, typename ChainType, typename CoefficientType>
+    void update(ChainType &chain, CoefficientType &newCoefficients)
+    {
+        UpdateCoefficients(chain.template get<Index>().coefficients, newCoefficients[Index]);
+        chain.template setBypassed <Index>(false);
+    }
+    
+    template <typename ChainType, typename CoefficientType>
+    void UpdateCutFilter(ChainType &Cut, CoefficientType &CutCoefficients, const Slope &CutSlope)
+    {
+        Cut.template setBypassed <0>(true);
+        Cut.template setBypassed <1>(true);
+        Cut.template setBypassed <2>(true);
+        Cut.template setBypassed <3>(true);
+        Cut.template setBypassed <4>(true);
+        
+        switch (CutSlope)
+        {
+            case Slope_60:
+            {
+                update<4>(Cut, CutCoefficients);
+            }
+            case Slope_48:
+            {
+                update<3>(Cut, CutCoefficients);
+            }
+            case Slope_36:
+            {
+                update<2>(Cut, CutCoefficients);
+            }
+            case Slope_24:
+            {
+                update<1>(Cut, CutCoefficients);
+            }
+            case Slope_12:
+            {
+                update<0>(Cut, CutCoefficients);
+            }
+        }
+        return;
+    }
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChannelEQAudioProcessor)
 };
