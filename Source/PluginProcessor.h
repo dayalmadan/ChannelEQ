@@ -85,8 +85,6 @@ private:
         LowCut, Bell, HighCut
     };
     
-    void UpdateBellFilter(const ChainSettings &chainSettings);
-    
     using Coefficients = Filter::CoefficientsPtr;
     
     static void UpdateCoefficients(Coefficients &old, const Coefficients &replacements);
@@ -132,6 +130,12 @@ private:
         }
         return;
     }
+    
+    void UpdateLowCutFilter(const ChainSettings &chainSettings);
+    void UpdateHighCutFilter(const ChainSettings &chainSettings);
+    void UpdateBellFilter(const ChainSettings &chainSettings);
+    
+    void UpdateFilters();
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChannelEQAudioProcessor)
