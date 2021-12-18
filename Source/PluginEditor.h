@@ -43,6 +43,12 @@ private:
     
     CustomKnob LowCutSlopeKnob, HighCutSlopeKnob;
     
+    using APVTS = juce::AudioProcessorValueTreeState;
+    using Attachments = APVTS::SliderAttachment;
+    
+    Attachments BellFreqKnobAttachment, BellGainKnobAttachment, BellQKnobAttachment, LowCutFreqKnobAttachment, HighCutFreqKnobAttachment;
+    Attachments LowCutSlopeKnobAttachment, HighCutSlopeKnobAttachment;
+    
     std::vector<juce::Component*> GetComponents();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChannelEQAudioProcessorEditor)

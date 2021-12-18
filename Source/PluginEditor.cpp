@@ -11,7 +11,14 @@
 
 //==============================================================================
 ChannelEQAudioProcessorEditor::ChannelEQAudioProcessorEditor (ChannelEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+BellFreqKnobAttachment(audioProcessor.apvts, "Bell Freq", BellFreqKnob),
+BellGainKnobAttachment(audioProcessor.apvts, "Bell Gain", BellGainKnob),
+BellQKnobAttachment(audioProcessor.apvts, "Bell Width (Q)", BellQKnob),
+LowCutFreqKnobAttachment(audioProcessor.apvts, "LowCut Freq", LowCutFreqKnob),
+HighCutFreqKnobAttachment(audioProcessor.apvts, "HighCut Freq", HighCutFreqKnob),
+LowCutSlopeKnobAttachment(audioProcessor.apvts, "LowCut Slope", LowCutSlopeKnob),
+HighCutSlopeKnobAttachment(audioProcessor.apvts, "HighCut Slope", HighCutSlopeKnob)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
