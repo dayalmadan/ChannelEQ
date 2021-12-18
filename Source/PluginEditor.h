@@ -49,6 +49,8 @@ private:
     Attachments BellFreqKnobAttachment, BellGainKnobAttachment, BellQKnobAttachment, LowCutFreqKnobAttachment, HighCutFreqKnobAttachment;
     Attachments LowCutSlopeKnobAttachment, HighCutSlopeKnobAttachment;
     
+    MonoChain monoChain;
+    
     std::vector<juce::Component*> GetComponents();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChannelEQAudioProcessorEditor)
