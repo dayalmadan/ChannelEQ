@@ -176,8 +176,8 @@ bool ChannelEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* ChannelEQAudioProcessor::createEditor()
 {
-    //return new ChannelEQAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new ChannelEQAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
